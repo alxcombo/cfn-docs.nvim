@@ -8,11 +8,13 @@ local markview = require("markview")
 M.verbosity = 0
 
 function M.send_notification(message, level, opts)
-	local severity = level or "info" -- "info", "warn", "error", "debug"
-	snacks.notifier.notify(message, {
-		level = severity,
-		timeout = opts and opts.timeout or 3000, -- Durée d'affichage par défaut 3000 ms
-		title = opts and opts.title or "CloudFormation", -- Titre par défaut
+	level = level or "info"
+	opts = opts or {}
+
+	-- Utilisation de la notification native de Neovim
+	vim.notify(message, vim.log.levels[string.upper(level)] or vim.log.levels.INFO, {
+		title = opts.title or "Notification",
+		timeout = opts.timeout or 3000,
 	})
 end
 
