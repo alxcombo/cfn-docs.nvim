@@ -1,11 +1,20 @@
 local M = {}
-local notify = require("notify")
 local http = require("plenary.curl")
 local htmlparser = require("htmlparser") -- Vous pouvez installer un parseur HTML Lua
+local snacks = require("snacks")
 local markview = require("markview")
 
 -- Définir le niveau de verbosité (0 = aucun log, 1 = essentiel, 2 = débogage détaillé)
 M.verbosity = 0
+
+function M.send_notification(message, level, opts)
+	local severity = level or "info" -- "info", "warn", "error", "debug"
+	snacks.notifier.notify(message, {
+		level = severity,
+		timeout = opts and opts.timeout or 3000, -- Durée d'affichage par défaut 3000 ms
+		title = opts and opts.title or "CloudFormation", -- Titre par défaut
+	})
+end
 
 -- Fonction de journalisation conditionnelle
 local function log(message, level)
@@ -106,8 +115,11 @@ vim.api.nvim_set_keymap(
 -- Fonction privée pour récupérer le type de ressource sous le curseur
 local function get_resource_type()
 	-- Récupère les paramètres de position pour la requête
-	local params = vim.lsp.util.make_position_params(0, { position_encoding = "utf8" })
+	local clients = vim.lsp.get_clients({ bufnr = 0 })
+	local position_encoding = (clients[1] and clients[1].offset_encoding) or "utf-16"
 
+	-- local params = vim.lsp.util.make_position_params(0, { position_encoding = "utf8" })
+	local params = vim.lsp.util.make_position_params(0, position_encoding)
 	-- Envoie une requête LSP avec les paramètres complets
 	local result = vim.lsp.buf_request_sync(0, "textDocument/documentSymbol", params, 1000)
 
@@ -172,7 +184,7 @@ function M.generate_cloudformation_doc_url()
 	local resource_type = get_resource_type()
 	if not resource_type then
 		log("Resource Type not found.", 1)
-		notify("Resource Type not found.", "warn", { title = "CloudFormation" })
+		M.send_notification("Resource Type not found.", "warn")
 		return
 	end
 
@@ -194,7 +206,7 @@ function M.generate_cloudformation_doc_url()
 	end
 
 	log("Generated URL: " .. url, 1)
-	notify("Generated URL: " .. url, "info", { title = "CloudFormation" })
+	M.send_notification("Generated URL: " .. url, "info")
 	vim.fn.system("win32yank.exe -i", url) -- Copier dans le presse-papiers
 end
 
