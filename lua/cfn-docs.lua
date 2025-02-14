@@ -1,8 +1,6 @@
 local M = {}
 local http = require("plenary.curl")
 local htmlparser = require("htmlparser") -- Vous pouvez installer un parseur HTML Lua
-local snacks = require("snacks")
-local markview = require("markview")
 
 -- Définir le niveau de verbosité (0 = aucun log, 1 = essentiel, 2 = débogage détaillé)
 M.verbosity = 0
