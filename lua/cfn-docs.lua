@@ -72,6 +72,10 @@ function M.show_documentation()
 	end
 end
 
+vim.api.nvim_create_user_command("CfnDoc", function()
+	M.show_documentation()
+end, { desc = "Show CloudFormation documentation for resource under cursor" })
+
 -- Fonction privée pour récupérer le type de ressource sous le curseur
 local function get_resource_type()
 	-- Récupère les paramètres de position pour la requête
