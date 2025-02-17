@@ -24,93 +24,11 @@ local function log(message, level)
 	end
 end
 
--- Fonction pour extraire et nettoyer le contenu HTML
-function M.extract_main_content(html)
-	local root = htmlparser.parse(html)
-
-	-- Sélectionner le nœud contenant le contenu principal
-	local main_content = root:select("#main-col-body")
-
-	if #main_content == 0 then
-		return nil, "Main content not found in the HTML."
-	end
-
-	-- Récupérer le contenu HTML brut
-	local node = main_content[1]
-	local clean_html = node:getcontent()
-
-	-- Optionnel : filtrer manuellement les éléments non souhaités
-	clean_html = clean_html:gsub("<awsdocs%-language%-banner.->.-</awsdocs%-language%-banner>", "")
-	clean_html = clean_html:gsub("<awsdocs%-page%-header.-</awsdocs%-page%-header>", "")
-	clean_html = clean_html:gsub("<awsdocs%-filter%-selector.-</awsdocs%-filter%-selector>", "")
-
-	return clean_html, nil
-end
-
--- Fonction pour convertir HTML en Markdown
-local function html_to_markdown(html_content)
-	local markdown = html_content
-		:gsub("<h1[^>]*>(.-)</h1>", "# %1\n")
-		:gsub("<h2[^>]*>(.-)</h2>", "## %1\n")
-		:gsub("<h3[^>]*>(.-)</h3>", "### %1\n")
-		:gsub("<p[^>]*>(.-)</p>", "%1\n\n")
-		:gsub('<a href="(.-)".->(.-)</a>', "[%2](%1)")
-		:gsub("<em>(.-)</em>", "_%1_")
-		:gsub("<code[^>]*>(.-)</code>", "`%1`")
-		:gsub("<pre[^>]*>(.-)</pre>", "```\n%1\n```")
-		:gsub("<[^>]+>", "")
-		:gsub("%s+\n", "\n")
-		:gsub("\n%s+", "\n")
-	return markdown
-end
-
--- Fonction pour afficher du HTML dans une fenêtre flottante
-local function open_html_in_floating_window(html_content)
-	local buf = vim.api.nvim_create_buf(false, true) -- Crée un buffer temporaire
-	local width = math.floor(vim.o.columns * 0.8)
-	local height = math.floor(vim.o.lines * 0.8)
-	local row = math.floor((vim.o.lines - height) / 2)
-	local col = math.floor((vim.o.columns - width) / 2)
-
-	vim.api.nvim_open_win(buf, true, {
-		relative = "editor",
-		width = width,
-		height = height,
-		row = row,
-		col = col,
-		style = "minimal",
-		border = "rounded",
-	})
-
-	local markdown_content = html_to_markdown(html_content)
-
-	vim.api.nvim_buf_set_lines(buf, 0, -1, false, vim.split(markdown_content, "\n"))
-end
-
 -- Fonction principale pour afficher le contenu HTML filtré
-function M.show_filtered_content(url)
-	local response = http.get({ url = url })
-	if response and response.status == 200 then
-		log("Successfully fetched HTML from URL.", 1)
-
-		local main_content, err = M.extract_main_content(response.body)
-		if err then
-			log(err, 1)
-			return
-		end
-
-		open_html_in_floating_window(main_content)
-	else
-		log("Failed to fetch the page: " .. url, 1)
-	end
+function M.show_documentation()
+	local url = M.generate_cloudformation_doc_url()
+	vim.cmd("W3mVSplit " .. url)
 end
-
-vim.api.nvim_set_keymap(
-	"n",
-	"<leader>cf",
-	':lua require("cfn-docs").show_filtered_content("https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-route.html")<CR>',
-	{ noremap = true, silent = true }
-)
 
 -- Fonction privée pour récupérer le type de ressource sous le curseur
 local function get_resource_type()
@@ -205,9 +123,7 @@ function M.generate_cloudformation_doc_url()
 		return
 	end
 
-	log("Generated URL: " .. url, 1)
-	M.send_notification("Generated URL: " .. url, "info")
-	vim.fn.system("win32yank.exe -i", url) -- Copier dans le presse-papiers
+	return url
 end
 
 -- Fonction de test pour une liste de ressources
@@ -321,12 +237,28 @@ vim.api.nvim_set_keymap(
 	{ noremap = true, silent = true, desc = "Test CloudFormation URLs" }
 )
 
--- Raccourci clavier pour générer une URL CloudFormation
+vim.api.nvim_set_keymap(
+	"n",
+	"<leader>co",
+	':lua require("cfn-docs").show_documentation()<CR>',
+	{ noremap = true, silent = true, desc = "Show CloudFormation doc URL" }
+)
+
+-- Fonction pour copier l'URL CloudFormation dans le presse-papiers
+function M.copy_cloudformation_doc_url()
+	local url = M.generate_cloudformation_doc_url()
+	if url then
+		vim.fn.system("win32yank.exe -i", url) -- Copier dans le presse-papiers
+		M.send_notification("Copied URL: " .. url, "info")
+	end
+end
+
+-- Raccourci clavier pour copier l'URL CloudFormation
 vim.api.nvim_set_keymap(
 	"n",
 	"<leader>cd",
-	':lua require("cfn-docs").generate_cloudformation_doc_url()<CR>',
-	{ noremap = true, silent = true, desc = "Generate CloudFormation doc URL" }
+	':lua require("cfn-docs").copy_cloudformation_doc_url()<CR>',
+	{ noremap = true, silent = true, desc = "Copy CloudFormation doc URL" }
 )
 
 vim.opt.foldcolumn = "0"
