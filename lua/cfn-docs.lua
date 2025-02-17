@@ -2,8 +2,48 @@ local M = {}
 local http = require("plenary.curl")
 local htmlparser = require("htmlparser") -- Vous pouvez installer un parseur HTML Lua
 
--- Définir le niveau de verbosité (0 = aucun log, 1 = essentiel, 2 = débogage détaillé)
-M.verbosity = 0
+M.config = {
+	verbosity = 0, -- 0 = aucun log, 1 = essentiel, 2 = détaillé
+	use_w3m = true, -- Utiliser w3m pour afficher la doc (sinon juste copier l'URL)
+	keymaps = {
+		show_doc = "<leader>co",
+		copy_doc = "<leader>cd",
+		test_urls = "<leader>ct",
+	},
+}
+
+function M.setup(user_config)
+	-- Fusionner les options utilisateur avec les valeurs par défaut
+	M.config = vim.tbl_deep_extend("force", M.config, user_config or {})
+
+	-- Appliquer les keymaps si elles sont activées
+	if M.config.keymaps.show_doc then
+		vim.api.nvim_set_keymap(
+			"n",
+			M.config.keymaps.show_doc,
+			':lua require("cfn-docs").show_documentation()<CR>',
+			{ noremap = true, silent = true, desc = "Show CloudFormation doc URL" }
+		)
+	end
+
+	if M.config.keymaps.copy_doc then
+		vim.api.nvim_set_keymap(
+			"n",
+			M.config.keymaps.copy_doc,
+			':lua require("cfn-docs").copy_cloudformation_doc_url()<CR>',
+			{ noremap = true, silent = true, desc = "Copy CloudFormation doc URL" }
+		)
+	end
+
+	if M.config.keymaps.test_urls then
+		vim.api.nvim_set_keymap(
+			"n",
+			M.config.keymaps.test_urls,
+			':lua require("cfn-docs").test_cloudformation_urls()<CR>',
+			{ noremap = true, silent = true, desc = "Test CloudFormation URLs" }
+		)
+	end
+end
 
 function M.send_notification(message, level, opts)
 	level = level or "info"
@@ -16,18 +56,20 @@ function M.send_notification(message, level, opts)
 	})
 end
 
--- Fonction de journalisation conditionnelle
 local function log(message, level)
 	level = level or 1 -- Niveau par défaut = 1
-	if M.verbosity >= level then
+	if (M.config.verbosity or 0) >= level then -- Évite la comparaison avec nil
 		print(message)
 	end
 end
 
--- Fonction principale pour afficher le contenu HTML filtré
 function M.show_documentation()
 	local url = M.generate_cloudformation_doc_url()
-	vim.cmd("W3mVSplit " .. url)
+	if M.config.use_w3m then
+		vim.cmd("W3mVSplit " .. url)
+	else
+		M.send_notification("Documentation URL: " .. url, "info")
+	end
 end
 
 -- Fonction privée pour récupérer le type de ressource sous le curseur
