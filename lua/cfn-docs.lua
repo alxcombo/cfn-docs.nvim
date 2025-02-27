@@ -274,22 +274,6 @@ function M.test_cloudformation_urls()
 	print("Testing completed.")
 end
 
--- to test run the commmand :lua require("cloudformation").test_cloudformation_urls()
--- Raccourci clavier pour tester les URLs CloudFormation
-vim.api.nvim_set_keymap(
-	"n",
-	"<leader>ct",
-	':lua require("cfn-docs").test_cloudformation_urls()<CR>',
-	{ noremap = true, silent = true, desc = "Test CloudFormation URLs" }
-)
-
-vim.api.nvim_set_keymap(
-	"n",
-	"<leader>co",
-	':lua require("cfn-docs").show_documentation()<CR>',
-	{ noremap = true, silent = true, desc = "Show CloudFormation doc URL" }
-)
-
 -- Fonction pour copier l'URL CloudFormation dans le presse-papiers
 function M.copy_cloudformation_doc_url()
 	local url = M.generate_cloudformation_doc_url()
@@ -298,14 +282,6 @@ function M.copy_cloudformation_doc_url()
 		M.send_notification("Copied URL: " .. url, "info")
 	end
 end
-
--- Raccourci clavier pour copier l'URL CloudFormation
-vim.api.nvim_set_keymap(
-	"n",
-	"<leader>cd",
-	':lua require("cfn-docs").copy_cloudformation_doc_url()<CR>',
-	{ noremap = true, silent = true, desc = "Copy CloudFormation doc URL" }
-)
 
 vim.opt.foldcolumn = "0"
 vim.opt.foldmethod = "expr"
