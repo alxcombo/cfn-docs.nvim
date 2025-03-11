@@ -1,6 +1,6 @@
 local M = {}
-local http = require("plenary.curl")
-local htmlparser = require("htmlparser") -- Vous pouvez installer un parseur HTML Lua
+-- local http = require("plenary.curl")
+-- local htmlparser = require("htmlparser") -- Vous pouvez installer un parseur HTML Lua
 
 M.config = {
 	verbosity = 0, -- 0 = aucun log, 1 = essentiel, 2 = détaillé
@@ -143,7 +143,6 @@ local function get_resource_type()
 	return nil
 end
 
--- Fonction publique pour générer une URL CloudFormation pour accéder à la documentation de la ressource
 function M.generate_cloudformation_doc_url()
 	local resource_type = get_resource_type()
 	if not resource_type then
