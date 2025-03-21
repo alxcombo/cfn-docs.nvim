@@ -8,7 +8,6 @@ M.config = {
 	keymaps = {
 		show_doc = "<leader>co",
 		copy_doc = "<leader>cd",
-		test_urls = "<leader>ct",
 	},
 }
 
@@ -32,15 +31,6 @@ function M.setup(user_config)
 			M.config.keymaps.copy_doc,
 			':lua require("cfn-docs").copy_cloudformation_doc_url()<CR>',
 			{ noremap = true, silent = true, desc = "Copy CloudFormation doc URL" }
-		)
-	end
-
-	if M.config.keymaps.test_urls then
-		vim.api.nvim_set_keymap(
-			"n",
-			M.config.keymaps.test_urls,
-			':lua require("cfn-docs").test_cloudformation_urls()<CR>',
-			{ noremap = true, silent = true, desc = "Test CloudFormation URLs" }
 		)
 	end
 end
@@ -169,108 +159,6 @@ function M.generate_cloudformation_doc_url()
 	end
 
 	return url
-end
-
--- Fonction de test pour une liste de ressources
-function M.test_cloudformation_urls()
-	local aws_resource_types = {
-		"AWS::EC2::Instance",
-		"AWS::S3::Bucket",
-		"AWS::IAM::Role",
-		"AWS::Lambda::Function",
-		"AWS::DynamoDB::Table",
-		"AWS::CloudWatch::Alarm",
-		"AWS::RDS::DBInstance",
-		"AWS::SNS::Topic",
-		"AWS::SQS::Queue",
-		"AWS::ApiGateway::RestApi",
-		"AWS::ECS::Cluster",
-		"AWS::KMS::Key",
-		"AWS::StepFunctions::StateMachine",
-		"AWS::CloudFront::Distribution",
-		"AWS::EKS::Cluster",
-		"AWS::ElastiCache::CacheCluster",
-		"AWS::SecretsManager::Secret",
-		"AWS::Glue::Job",
-		"AWS::Athena::WorkGroup",
-		"AWS::SageMaker::NotebookInstance",
-		"AWS::Batch::ComputeEnvironment",
-		"AWS::CodeBuild::Project",
-		"AWS::ElasticLoadBalancingV2::LoadBalancer",
-		"AWS::ElasticBeanstalk::Application",
-		"AWS::Redshift::Cluster",
-		"AWS::Config::ConfigRule",
-		"AWS::CloudFormation::Stack",
-		"AWS::GuardDuty::Detector",
-		"AWS::Inspector::AssessmentTarget",
-		"AWS::Kinesis::Stream",
-		"AWS::AutoScaling::AutoScalingGroup",
-		"AWS::AutoScaling::AutoScalingGroup",
-		"AWS::AutoScaling::LaunchConfiguration",
-		"AWS::AutoScaling::ScalingPolicy",
-		"AWS::Backup::BackupPlan",
-		"AWS::Backup::BackupVault",
-		"AWS::CloudTrail::Trail",
-		"AWS::Cognito::UserPool",
-		"AWS::Cognito::UserPoolClient",
-		"AWS::DocDB::DBCluster",
-		"AWS::DynamoDB::GlobalTable",
-		"AWS::ElasticLoadBalancing::LoadBalancer",
-		"AWS::ElasticLoadBalancingV2::TargetGroup",
-		"AWS::ElasticLoadBalancingV2::Listener",
-		"AWS::ElasticLoadBalancingV2::ListenerRule",
-		"AWS::IoT::Thing",
-		"AWS::IoT::TopicRule",
-		"AWS::Lambda::Permission",
-		"AWS::Logs::LogGroup",
-		"AWS::Logs::MetricFilter",
-		"AWS::RDS::DBCluster",
-		"AWS::RDS::DBClusterParameterGroup",
-		"AWS::RDS::DBSubnetGroup",
-		"AWS::Route53::HostedZone",
-		"AWS::Route53::RecordSet",
-		"AWS::Route53Resolver::ResolverRule",
-		"AWS::S3::AccessPoint",
-		"AWS::S3::StorageLens",
-		"AWS::ServiceCatalog::Portfolio",
-		"AWS::StepFunctions::Activity",
-		"AWS::Transfer::User",
-		"AWS::WAF::Rule",
-		"AWS::WAFv2::RuleGroup",
-		"AWS::WAFRegional::WebACL",
-		"AWS::WAFv2::WebACL",
-		"AWS::WorkSpaces::Workspace",
-	}
-
-	print("Testing CloudFormation URLs...")
-
-	for _, resource_type in ipairs(aws_resource_types) do
-		-- Générer l'URL pour le type de ressource
-		local type_without_prefix = resource_type:gsub("^AWS::", "")
-		local type_path = type_without_prefix:gsub("::", "-"):lower()
-		local url = "https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-"
-			.. type_path
-			.. ".html"
-
-		-- Vérifier l'URL
-		local http = require("plenary.curl")
-		local response = http.get({ url = url, timeout = 3000 })
-		if response and response.status == 200 then
-			print("PASS: " .. resource_type .. " -> " .. url)
-		else
-			print(
-				"FAIL: "
-					.. resource_type
-					.. " -> "
-					.. url
-					.. " (Status: "
-					.. (response and response.status or "Unknown")
-					.. ")"
-			)
-		end
-	end
-
-	print("Testing completed.")
 end
 
 -- Fonction pour copier l'URL CloudFormation dans le presse-papiers
