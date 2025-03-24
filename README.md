@@ -46,11 +46,14 @@ require('cfn-docs').setup({
 ### Running Tests
 
 ```bash
-# Run tests
+# Run tests with minimal output (just success/failure counts)
 make test
 
-# Run tests with verbose output
+# Run tests with verbose output (shows test names and details)
 make test-verbose
+
+# Run tests with pretty UTF symbols
+make test-pretty
 ```
 
 ## License
