@@ -55,10 +55,12 @@ end
 
 function M.show_documentation()
 	local url = M.generate_cloudformation_doc_url()
-	if M.config.use_w3m then
-		vim.cmd("W3mVSplit " .. url)
-	else
-		M.send_notification("Documentation URL: " .. url, "info")
+	if url then
+		if M.config.use_w3m then
+			vim.cmd("W3mVSplit " .. url)
+		else
+			M.send_notification("Documentation URL: " .. url, "info")
+		end
 	end
 end
 
@@ -133,12 +135,15 @@ local function get_resource_type()
 	return nil
 end
 
+-- Exposer la fonction get_resource_type pour les tests
+_G.get_resource_type = get_resource_type
+
 function M.generate_cloudformation_doc_url()
 	local resource_type = get_resource_type()
 	if not resource_type then
 		log("Resource Type not found.", 1)
 		M.send_notification("Resource Type not found.", "warn")
-		return
+		return nil
 	end
 
 	-- Supprimer le préfixe "AWS::" si présent
@@ -146,18 +151,7 @@ function M.generate_cloudformation_doc_url()
 	-- Transformer le type en chemin pour l'URL
 	local type_path = type_without_prefix:gsub("::", "-"):lower()
 	local url = "https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-" .. type_path .. ".html"
-
-	local function validate_url(url)
-		local http = require("plenary.curl")
-		local response = http.get({ url = url, timeout = 3000 })
-		return response and response.status == 200
-	end
-
-	if not validate_url(url) then
-		log("Invalid or inaccessible URL: " .. url, 1)
-		return
-	end
-
+	
 	return url
 end
 
