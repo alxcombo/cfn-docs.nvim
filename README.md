@@ -16,7 +16,7 @@ Using [lazy.nvim](https://github.com/folke/lazy.nvim):
 ```lua
 return {
   {
-    "alxcombo/cfn-docs.nvim"
+    "alxcombo/cfn-docs.nvim",
     config = function()
       require("cfn-docs").setup({
         verbosity = 0,
