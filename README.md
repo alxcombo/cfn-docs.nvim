@@ -9,17 +9,25 @@ A Neovim plugin for accessing AWS CloudFormation documentation directly from you
 - Copy documentation URLs to clipboard
 - Support for LSP integration
 
-## Installation
+## Installation and Configuration
 
-Using [packer.nvim](https://github.com/wbthomason/packer.nvim):
+Using [lazy.nvim](https://github.com/folke/lazy.nvim):
 
 ```lua
-use {
-  'alexandre/cfn-docs.nvim',
-  requires = {'nvim-lua/plenary.nvim'},
-  config = function()
-    require('cfn-docs').setup()
-  end
+return {
+  {
+    "alxcombo/cfn-docs.nvim"
+    config = function()
+      require("cfn-docs").setup({
+        verbosity = 0,
+        use_w3m = true,
+        keymaps = {
+          show_doc = "<leader>cfs",
+          copy_doc = "<leader>cfc",
+        },
+      })
+    end,
+  },
 }
 ```
 
