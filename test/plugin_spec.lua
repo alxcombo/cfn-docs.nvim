@@ -244,7 +244,7 @@ describe("cfn-docs", function()
 		it("should send notification with default level and options", function()
 			-- Call the function with just a message
 			cfn_docs.send_notification("Test message")
-			
+
 			-- Verify notification was sent
 			assert.are.equal(1, #mock.notifications)
 			assert.are.equal("Test message", mock.notifications[1].message)
@@ -252,24 +252,24 @@ describe("cfn-docs", function()
 			assert.are.equal("Notification", mock.notifications[1].opts.title)
 			assert.are.equal(3000, mock.notifications[1].opts.timeout)
 		end)
-		
+
 		it("should send notification with custom level", function()
 			-- Call the function with custom level
 			cfn_docs.send_notification("Warning message", "warn")
-			
+
 			-- Verify notification was sent with correct level
 			assert.are.equal(1, #mock.notifications)
 			assert.are.equal("Warning message", mock.notifications[1].message)
 			assert.are.equal(vim.log.levels.WARN, mock.notifications[1].level)
 		end)
-		
+
 		it("should send notification with custom options", function()
 			-- Call the function with custom options
 			cfn_docs.send_notification("Error message", "error", {
 				title = "Custom Title",
 				timeout = 5000
 			})
-			
+
 			-- Verify notification was sent with correct options
 			assert.are.equal(1, #mock.notifications)
 			assert.are.equal("Error message", mock.notifications[1].message)
@@ -277,11 +277,11 @@ describe("cfn-docs", function()
 			assert.are.equal("Custom Title", mock.notifications[1].opts.title)
 			assert.are.equal(5000, mock.notifications[1].opts.timeout)
 		end)
-		
+
 		it("should handle invalid notification level", function()
 			-- Call the function with invalid level
 			cfn_docs.send_notification("Test with invalid level", "not_a_valid_level")
-			
+
 			-- Verify notification defaults to INFO level
 			assert.are.equal(1, #mock.notifications)
 			assert.are.equal("Test with invalid level", mock.notifications[1].message)
@@ -405,7 +405,7 @@ describe("cfn-docs", function()
 			-- Verify result
 			assert.is_nil(url)
 		end)
-		
+
 		-- Tests pour différents types de ressources CloudFormation
 		it("should generate correct URLs for various CloudFormation resource types", function()
 			-- Sélectionner des types de ressources à tester, incluant des noms simples et complexes
@@ -421,31 +421,31 @@ describe("cfn-docs", function()
 				"AWS::Cognito::UserPool",
 				"AWS::Route53::HostedZone",
 				"AWS::WAFv2::WebACL",
-				
+
 				-- Ressources avec des noms plus complexes
 				"AWS::ElasticLoadBalancingV2::ListenerRule",
 				"AWS::RDS::DBClusterParameterGroup",
 				"AWS::Route53Resolver::ResolverRule"
 			}
-			
+
 			for _, resource_type in ipairs(test_resources) do
 				-- Set mock resource type
 				mock.resource_type = resource_type
-				
+
 				-- Generate expected URL
 				local type_without_prefix = resource_type:gsub("^AWS::", "")
 				local type_path = type_without_prefix:gsub("::", "-"):lower()
 				local expected_url = "https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-" .. type_path .. ".html"
-				
+
 				-- Reset URLs tracking
 				mock.urls = {}
-				
+
 				-- Call the function
 				local url = cfn_docs.generate_cloudformation_doc_url()
-				
+
 				-- Verify result
 				assert.are.equal(expected_url, url)
-				
+
 				-- Verify HTTP request was made
 				assert.are.equal(1, #mock.urls)
 				assert.are.equal(expected_url, mock.urls[1])

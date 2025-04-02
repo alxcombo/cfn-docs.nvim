@@ -151,7 +151,7 @@ function M.generate_cloudformation_doc_url()
 	-- Transformer le type en chemin pour l'URL
 	local type_path = type_without_prefix:gsub("::", "-"):lower()
 	local url = "https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-" .. type_path .. ".html"
-	
+
 	return url
 end
 

@@ -27,7 +27,7 @@ local function setup_test_env()
     },
     lsp = {
       util = {
-        make_position_params = function() 
+        make_position_params = function()
           return {
             position = {
               line = 0,
@@ -36,7 +36,7 @@ local function setup_test_env()
           }
         end
       },
-      buf_request_sync = function() 
+      buf_request_sync = function()
         -- Simulate a response with a resource type
         return {
           {
@@ -93,9 +93,9 @@ local function setup_test_env()
 
   -- Mock plenary.curl
   package.loaded["plenary.curl"] = {
-    get = function(opts) 
+    get = function(opts)
       -- Always return success for URL validation
-      return {status = 200} 
+      return {status = 200}
     end
   }
 

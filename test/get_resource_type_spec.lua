@@ -154,7 +154,7 @@ describe("get_resource_type", function()
 		-- Verify result
 		assert.are.equal("AWS::S3::Bucket", resource_type)
 	end)
-	
+
 	it("should return nil when cursor is not on a resource", function()
 		-- Set cursor position outside any resource
 		mock.cursor_position = { line = 15, character = 10 }
@@ -195,7 +195,7 @@ describe("get_resource_type", function()
 		-- Verify result
 		assert.is_nil(resource_type)
 	end)
-	
+
 	it("should handle nested resources correctly", function()
 		-- Set cursor position
 		mock.cursor_position = { line = 7, character = 10 }
@@ -249,7 +249,7 @@ describe("get_resource_type", function()
 		-- Verify result - should find the parent resource type since cursor is on line 7
 		assert.are.equal("AWS::CloudFormation::Stack", resource_type)
 	end)
-	
+
 	it("should handle multiple resources and find the correct one", function()
 		-- Set cursor position
 		mock.cursor_position = { line = 25, character = 10 }
@@ -316,7 +316,7 @@ describe("get_resource_type", function()
 		-- Verify result - should find the third resource type since cursor is on line 25
 		assert.are.equal("AWS::DynamoDB::Table", resource_type)
 	end)
-	
+
 	it("should handle resource without Type field", function()
 		-- Set cursor position
 		mock.cursor_position = { line = 5, character = 10 }
