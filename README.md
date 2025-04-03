@@ -1,17 +1,24 @@
-# cfn-docs.nvim
+# 🚀 cfn-docs.nvim
 
-A Neovim plugin for accessing AWS CloudFormation documentation directly from your editor.
+A Neovim plugin to access AWS CloudFormation documentation **without leaving your editor**.  
+Stay focused, save time — **zero friction, zero distraction.**
 
-## Features
+---
 
-- Generate documentation URLs for CloudFormation resources
-- Open documentation in browser or terminal
-- Copy documentation URLs to clipboard
-- Support for LSP integration
+## ✨ Features
 
-## Installation and Configuration
+- 🧠 Detect CloudFormation resource types using LSP
+- 🌐 Generate and open documentation URLs
+- 🖥️ Open docs in terminal via `w3m` (or just copy the link)
+- 📋 Copy doc URLs to clipboard
+- 🧩 Fully configurable keymaps
+- ⚙️ Idempotent and minimal by design
 
-Using [lazy.nvim](https://github.com/folke/lazy.nvim):
+---
+
+## ⚙️ Installation & Configuration
+
+With [lazy.nvim](https://github.com/folke/lazy.nvim):
 
 ```lua
 return {
@@ -31,28 +38,50 @@ return {
 }
 ```
 
-## Usage
+> ℹ️ If `use_w3m = false`, `show_doc` will behave like `copy_doc`, simply copying the URL to your clipboard.
+>
+> 🔜 In the future, `show_doc` may open the URL in your system browser when `w3m` is disabled.
 
-The plugin provides commands to access CloudFormation documentation:
+---
 
-- `:CfnDocs` - Open documentation for the resource under cursor
-- `:CfnDocsCopy` - Copy documentation URL to clipboard
+## 🚀 Usage
 
-## Development
+With your cursor **anywhere** inside a CloudFormation resource:
+
+- `<leader>cfs` → open the doc inside Neovim with `w3m`
+- `<leader>cfc` → copy the doc URL to clipboard
+
+Or use the commands:
+
+- `:CfnDocs` → show documentation
+- `:CfnDocsCopy` → copy URL
+
+---
+
+## 🧪 Development
 
 ### Running Tests
 
 ```bash
-# Run tests with minimal output (just success/failure counts)
+# Minimal output
 make test
 
-# Run tests with verbose output (shows test names and details)
+# Verbose output
 make test-verbose
 
-# Run tests with pretty UTF symbols
+# Pretty UTF symbols
 make test-pretty
 ```
 
-## License
+---
 
-MIT
+## 📝 License
+
+[MIT](./LICENSE)
+
+---
+
+## 🙌 Contributing
+
+PRs, issues and suggestions welcome!  
+Feel free to open an issue or contribute directly. Let's make Neovim even more cloud-friendly ☁️
